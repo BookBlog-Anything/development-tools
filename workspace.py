@@ -48,7 +48,7 @@ class Workspace():
         if is_config_setup == False:
             Setup()
 
-        self.updateOption = ["Change Name","Change alias","Change directory path","Add/Remove"]
+        self.updateOption = ["Change Name","Change alias","Change directory path","Add/Remove Apps & Commands"]
 
     def select(self):
         WorkspacesDetails = self.getDetails()
@@ -64,21 +64,23 @@ class Workspace():
         for i in range(WorkspacesNamesLen):
             NaturalOrder = (i + 1)
             workspaceName = WorkspacesNames[i]
-            OrderText = "\n%s) %s\n" % (NaturalOrder, workspaceName)
+            OrderText += "\n%s) %s\n" % (NaturalOrder, workspaceName)
 
-            workspace_selection = input("%s\n Write workspace order number(): " % (OrderText))
-            if workspace_selection.isnumeric() == False:
-                while True:
-                    print("a")
-                    workspace_selection = input('%s\nPlease, enter numeric selection of workspace():' % (OrderText))
-                    if workspace_selection.isnumeric() == True: break
-            
-            if int(WorkspacesNamesLen) >= int(workspace_selection):
-                indexOfWorkspace = (int(workspace_selection) - 1)
-                selected_workspace = WorkspacesNames[indexOfWorkspace]
-                return selected_workspace
-            else:
-                return False
+        workspace_selection = input("%s\n Write workspace order number(): " % (OrderText))
+        if workspace_selection.isnumeric() == False:
+            while True:
+                print("a")
+                workspace_selection = input('%s\nPlease, enter numeric selection of workspace():' % (OrderText))
+                if workspace_selection.isnumeric() == True: break
+
+
+        if int(WorkspacesNamesLen) >= int(workspace_selection):
+            indexOfWorkspace = (int(workspace_selection) - 1)
+            selected_workspace = WorkspacesNames[indexOfWorkspace]
+            return selected_workspace
+        else:
+            print("dont")
+            return False
 
     def create(self):
 
@@ -90,7 +92,6 @@ class Workspace():
                 return False
 
         alias = input('Enter short name for quick start ():')
-        print(alias.isspace())
         
         if not alias or len(name) == 0:
             alias = input('Plase, enter short name for quick start ():')
@@ -145,8 +146,7 @@ class Workspace():
     def update(self,workspace_name): 
         if workspace_name:
             workspace = self.get(workspace_name)
-            print(workspace)
-            return False
+
             if workspace == False:
                 print("\n[?] Not found some workspace in config \n")
             else:
@@ -162,17 +162,49 @@ class Workspace():
                         case 0:
                             # Name
                             new_workspace_name = input("\nCurrent Workspace Name: %s\nNew Workspace Name (): " % (workspace['name']))
-                            workspace_edit['name'] = new_workspace_name
-                            pass
+                            if len(new_workspace_name) != 0:
+                                workspace_edit['name'] = new_workspace_name 
+                            else: 
+                                print('[SKIP] no changes in this field')                            
                         case 1:
                             # Alias
-                            print("2")
+                            new_workspace_alias = input("\nCurrent Workspace alias: %s\nNew Workspace alias (): " % (workspace['alias']))
+                            if len(new_workspace_alias) != 0:
+                                workspace_edit['alias'] = new_workspace_alias 
+                            else: 
+                                print('[SKIP] no changes in this field')
                         case 2:
                             # Directory Path
-                            print("3")
+                            new_workspace_dPath = input("\nCurrent Workspace Directory Path: %s\nNew Workspace Directory Path (): " % (workspace['DirectoryPath']))
+                            if len(new_workspace_dPath) != 0:
+                                while True:
+                                    if os.path.exists(new_workspace_dPath) == False:
+                                        new_workspace_dPath = input("\nPlease, enter valid directory path ():")
+                                    else: 
+                                        workspace_edit['DirectoryPath'] = new_workspace_dPath 
+                                        break
+                            else: 
+                                print('[SKIP] no changes in this field')
                         case 3:
                             # Add/Remove Apps & Commands
-                            print("4")
+                            update_option = ''
+                            run_updates_option = ["Apps","Commands"]
+                            for i in range(len(run_updates_option)):
+                                update_option += "\n%s) %s" % ((i + 1),run_updates_option[i])
+                            
+                            selected_option = input("\n%s\n\nChoose types of update (): " % (update_option))
+                            
+                            update_option = ''
+                            run_events_option = ["Add","Remove"]
+                            for i in range(len(run_events_option)):
+                                update_option += "\n%s) %s" % ((i + 1),run_events_option[i])
+                            
+                            update_event = input("\n%s\n\nChoose update event (): " % (update_option))
+                            match run_events_option[int(update_event)-1]:
+                                case "Add":
+                                    print("Add %s" % (selected_option))
+                                case "Remove":
+                                    print("Remove %s" % (selected_option))
                     return workspace
                     
                 save_workspace = updates_selection()
@@ -219,28 +251,24 @@ class Workspace():
         print("recently opened")
 
     def save(self,workspace):
-        print(workspace)
+        # Config().edit()
+        pass
 
     def get(self,workspace_name):
         workspaces_json = Config().config['custom']
-        print(len(workspaces_json))
         for workspace in workspaces_json:
-            index =+ 0
             if workspace['name'] == workspace_name or workspace['alias'] == workspace_name:
-                print(index)
+                print(workspace)
                 return workspace
-            else:
-                return False
+        return False
 
     def getDetails(self):
         ObjectReturn = { "names":[], "Directories": [] }
         CustomArray = Config().config['custom']
-        print(CustomArray)
         if len(CustomArray) != 0: 
             for space in CustomArray:
                 ObjectReturn["names"].append(space["name"])
                 ObjectReturn["Directories"].append(space["DirectoryPath"])
-                print(space["name"])
             return ObjectReturn
         else:
             return False    
@@ -265,8 +293,9 @@ class Config():
             
             print("[+] workspace was saved in config file")
     def edit(workspace_object):
-        with open(config_json_file,"w") as outfile:
-            outfile.write()
+        with open(config_json_file,"r+") as f:
+            DataInsert = json.load(f)
+            print(DataInsert)
     def auto():
         SetupConfigDirectory = os.path.exists(config_directory)
         if SetupConfigDirectory == False: 
