@@ -6,7 +6,7 @@ import json
 import argparse
 import pathlib
 
-
+from libs.index import *
 
 system_name = os.getenv("username")
 
@@ -151,13 +151,12 @@ class Workspace():
                 print("\n[?] Not found some workspace in config \n")
             else:
                 def updates_selection(): 
-                    update_option = ''
                     workspace_edit = workspace
-                    update_selection_array = self.updateOption
-                    for i in range(len(update_selection_array)):
-                        update_option += "\n%s) %s" % ((i + 1),update_selection_array[i])
-
+                    update_option = selector(self.updateOption)
                     selected_option = input("\n%s\n\nChoose types of update (): " % (update_option))
+                    selected_option = selector(self.updateOption,selected_option)
+                    
+                    return False
                     match (int(selected_option) - 1):
                         case 0:
                             # Name
