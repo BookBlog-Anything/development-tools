@@ -1,15 +1,43 @@
 
-def selector(selection_options_array,selected_value=None):
-    if selected_value != None:
-        print(int(len(selection_options_array)),int(selected_value))
-        if int(len(selection_options_array)) >= int(selected_value):
-            selected_option = selection_options_array[(int(selected_value) - 1)]
-            print(selected_option)
-        else:
-            print("dont exist")    
-    else:
-        return_selection_option = ''
-        for i in range(len(selection_options_array)):
-            return_selection_option += "\n%s) %s" % ((i + 1),selection_options_array[i])
+class Selector():
+    def __init__(self,selection_options_array, primary_heading) -> None:
+        self.optionsArray = selection_options_array
+        self.primaryHeading = primary_heading
         
-        return return_selection_option
+    def check(self,selected_value):
+        if int(len(self.optionsArray)) >= int(selected_value):
+            selected_option = self.optionsArray[(int(selected_value) - 1)]
+            return True
+        else:
+            return False
+
+    def main(self):
+        if len(self.optionsArray) != 0:
+            update_option_selection = ''
+            for i in range(len(self.optionsArray)):
+                update_option_selection += "\n%s) %s" % ((i + 1),self.optionsArray[i])
+
+            selector_input = False
+            while True:
+                selector_input = input("\n%s\n\n%s (): " % (update_option_selection,self.primaryHeading))
+                selector_input_check = self.check(selector_input)
+                print(selector_input_check)
+                if selector_input_check == True: 
+                    return (int(selector_input)-1)
+                    break
+                else:
+                    self.primaryHeading = "Choose valid option"
+                    self.main()
+                
+        else:
+            print("WIthout Array")
+                    
+    #     pass
+    # if selected_value or selected_value != None :
+    #     # print(int(len(selection_options_array)),int(selected_value))
+    #     if int(len(selection_options_array)) >= int(selected_value):
+    #         selected_option = selection_options_array[(int(selected_value) - 1)]
+    #         return (int(selected_value)-1)
+    #     else:
+    #         return False
+    # else:
