@@ -1,6 +1,6 @@
 
 class Selector():
-    def __init__(self,selection_options_array, primary_heading) -> None:
+    def __init__(self,selection_options_array, primary_heading=None) -> None:
         self.optionsArray = selection_options_array
         self.primaryHeading = primary_heading
         
@@ -8,6 +8,13 @@ class Selector():
         if int(len(self.optionsArray)) >= int(selected_value):
             selected_option = self.optionsArray[(int(selected_value) - 1)]
             return True
+        else:
+            return False
+
+    def get(self, selected_value):
+        if int(len(self.optionsArray)) >= int(selected_value):
+            selected_option = self.optionsArray[int(selected_value)]
+            return selected_option
         else:
             return False
 
@@ -21,7 +28,6 @@ class Selector():
             while True:
                 selector_input = input("\n%s\n\n%s (): " % (update_option_selection,self.primaryHeading))
                 selector_input_check = self.check(selector_input)
-                print(selector_input_check)
                 if selector_input_check == True: 
                     return (int(selector_input)-1)
                     break

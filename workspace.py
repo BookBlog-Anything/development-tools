@@ -202,8 +202,64 @@ class Workspace():
                             print('[SKIP] no changes in this field')
 
                     def apps():
-                        updates_selection = selector(["Apps", "Commands"],"Chose update option").main()
-                        print(updates_selection)
+                        updates_selection = selector(["Apps", "Commands"],"Chose update option")
+                        update_option = updates_selection.main()
+
+                        advanced_events_selection = selector(["Add", "Remove"],"Chose update event")
+                        advanced_option = advanced_events_selection.main()
+
+                        match update_option:
+                            case 0:
+                                match advanced_option:
+                                    case 0:
+                                        print("App - Add")
+                                        app_input = input("\nWrite app file location (): ")
+                                        while True:
+                                            if len(app_input) == 0:
+                                                print("\n[SKIP] no changes in this field\n")
+                                                break
+                                            elif os.path.exists(app_input) == True:
+                                                workspace_edit['run']['apps'].append(app_input)
+                                                break
+                                            else: 
+                                                app_input = input("\nWrite exist app file location (): ")
+
+                                    case 1:
+                                        for element in workspace_edit['run']:
+                                            if element == 'apps' and len(workspace_edit['run']['apps']):
+                                                apps_list = []
+                                                for apps in workspace_edit['run']['apps']: apps_list.append(apps)
+                                                apps_selection = selector(apps_list,"Choose app for remove (): ")
+                                                apps_option = apps_selection.main()
+                                                
+                                                apps_list.pop(apps_option)
+                                                workspace_edit['run']['apps'] = apps_list
+                                            else: 
+                                                print("\n[?] Not found some workspace in config \n")
+                            case 1:
+                                match advanced_option:
+                                    case 0:
+                                        print("Commands - Add")
+                                        command_input = input("\nWrite command for run both workspace (): ")
+                                        while True:
+                                            if len(command_input) != 0:
+                                                workspace_edit['run']['commands'].append(command_input)
+                                                break
+                                            else:
+                                                print("\n[SKIP] no changes in this field\n")
+                                                break
+                                    case 1:
+                                        for element in workspace_edit['run']:
+                                            if element == 'commands' and len(workspace_edit['run']['commands']):
+                                                commands_list = []
+                                                for command in workspace_edit['run']['commands']: commands_list.append(command)
+                                                commands_selection = selector(commands_list,"Choose command for remove (): ")
+                                                commands_option = commands_selection.main()
+                                                
+                                                commands_list.pop(commands_option)
+                                                workspace_edit['run']['commands'] = commands_list
+                                            else: 
+                                                print("\n[?] Not found some workspace in config \n")
                         # selected_option = input(
                         #     "\n%s\n\nChoose types of update (): " % (update_option))
 
@@ -280,13 +336,16 @@ class Workspace():
 
     def save(self, workspace):
         # Config().edit()
+        print(workspace)
         pass
 
     def get(self, workspace_name):
         workspaces_json = Config().config['custom']
+        workspace_index = 0
         for workspace in workspaces_json:
+            workspace_index += 1
             if workspace['name'] == workspace_name or workspace['alias'] == workspace_name:
-                print(workspace)
+                print(workspace_index)
                 return workspace
         return False
 
