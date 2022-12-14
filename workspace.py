@@ -245,18 +245,20 @@ class Workspace():
                                                 break
                                     case 1:
                                         for element in workspace_edit['run']:
+                                            print(element)
+                                            print(workspace_edit['run']['commands'])
                                             if element == 'commands' and len(workspace_edit['run']['commands']) != 0:
                                                 commands_list = []
                                                 for command in workspace_edit['run']['commands']: commands_list.append(command)
-                                                commands_selection = selector(commands_list,"Choose command for remove (): ")
+                                                commands_selection = selector(commands_list,"Choose command for remove")
                                                 commands_option = commands_selection.main()
                                                 
                                                 commands_list.pop(commands_option)
                                                 workspace_edit['run']['commands'] = commands_list
+                                                break
                                             else: 
                                                 print("\n[?] Not found some workspace in config \n")
                                             
-                                            break
 
                     match selected_option:
                         # Name
@@ -323,8 +325,10 @@ class Workspace():
         ConfigSave = Config().edit(workspace)
         if ConfigSave == True:
             print("\n[+] updates is saved\n")
+            return True
         else:
             print("\n[+] There was an error while save updates\n")
+            return False
 
 
     def get(self, workspace_name):
@@ -419,9 +423,13 @@ match Command:
     case "-u" | "--update": WorkspaceInstance.update(workspaceName)
     case "-d" | "--delete": False
     case "--setup": Setup()
+    case "--version":
+        made_in = "\nMade By: BookBlog Anything < https://github.com/BookBlog-Anything/development-tools"
+        print(made_in)
+
     case False:
         left_space = "                    "
-        usage = "Usage: %s [--recent] [-r workspace_name]\n%s[-c] [-u workspace_name]\n%s[-d workspace_name]" % (
+        usage = "%s\nUsage: %s [--recent] [-r workspace_name]\n%s[-c] [-u workspace_name]\n%s[-d workspace_name]" % (
             sys.argv[0], left_space, left_space)
         print(usage)
     case "--help":
@@ -437,5 +445,5 @@ match Command:
                             help="Update workspace info like: (Name/Alias/Directory Path/Run apps & commands)")
         parser.add_argument("-d", "--delete", type=str,
                             metavar='', help="Delete workspace using name")
-
         parsed_args = parser.parse_args()
+
