@@ -30,16 +30,6 @@ class Setup():
 
     def create(self):
         Config.auto()
-        # print("exec")
-        # os.chdir("%s" % (system_setup_path))
-        # os.mkdir("C:/Users/Development Team/Documents/new-dir")
-        # if is_setup == True: return True
-
-        # print(system_setup_path)
-        # os.mkdir(r"%s" % (system_setup_path))
-
-        # for folderName in setup_folders:
-        #     os.mkdir(r"%s/%s" % (system_setup_path,folderName))
 
 
 class Workspace():
@@ -160,6 +150,7 @@ class Workspace():
             else:
                 def updates_selection():
                     workspace_edit = workspace
+                    workspace_edit['origin_name'] = workspace['name']
                     selected_option = selector(self.updateOption,"Choose types of update").main()
                     # update_option = selector(self.updateOption,"Choose types of update")
                     # while True:
@@ -225,17 +216,21 @@ class Workspace():
                                                 app_input = input("\nWrite exist app file location (): ")
 
                                     case 1:
+                                        print(workspace_edit)
                                         for element in workspace_edit['run']:
-                                            if element == 'apps' and len(workspace_edit['run']['apps']):
+                                            if element == 'apps' and len(workspace_edit['run']['apps']) != 0:
+                                                print("1")
                                                 apps_list = []
                                                 for apps in workspace_edit['run']['apps']: apps_list.append(apps)
-                                                apps_selection = selector(apps_list,"Choose app for remove (): ")
+                                                apps_selection = selector(apps_list,"Choose app for remove")
                                                 apps_option = apps_selection.main()
                                                 
                                                 apps_list.pop(apps_option)
+                                                print(apps_list)
                                                 workspace_edit['run']['apps'] = apps_list
                                             else: 
-                                                print("\n[?] Not found some workspace in config \n")
+                                                print("\n[?] FIrst, you should create workspace \n")
+                                            break
                             case 1:
                                 match advanced_option:
                                     case 0:
@@ -250,7 +245,7 @@ class Workspace():
                                                 break
                                     case 1:
                                         for element in workspace_edit['run']:
-                                            if element == 'commands' and len(workspace_edit['run']['commands']):
+                                            if element == 'commands' and len(workspace_edit['run']['commands']) != 0:
                                                 commands_list = []
                                                 for command in workspace_edit['run']['commands']: commands_list.append(command)
                                                 commands_selection = selector(commands_list,"Choose command for remove (): ")
@@ -260,22 +255,8 @@ class Workspace():
                                                 workspace_edit['run']['commands'] = commands_list
                                             else: 
                                                 print("\n[?] Not found some workspace in config \n")
-                        # selected_option = input(
-                        #     "\n%s\n\nChoose types of update (): " % (update_option))
-
-                        # update_option = ''
-                        # run_events_option = ["Add", "Remove"]
-                        # for i in range(len(run_events_option)):
-                        #     update_option += "\n%s) %s" % (
-                        #         (i + 1), run_events_option[i])
-
-                        # update_event = input(
-                        #     "\n%s\n\nChoose update event (): " % (update_option))
-                        # match run_events_option[int(update_event)-1]:
-                        #     case "Add":
-                        #         print("Add %s" % (selected_option))
-                        #     case "Remove":
-                        #         print("Remove %s" % (selected_option))
+                                            
+                                            break
 
                     match selected_option:
                         # Name
@@ -335,9 +316,16 @@ class Workspace():
         print("recently opened")
 
     def save(self, workspace):
-        # Config().edit()
-        print(workspace)
-        pass
+        Origin = self.get(workspace['origin_name'])
+        if Origin == False: return print("\n[?] Origin name is not same search result \n")
+        if workspace['index'] != Origin['index']: return print("\n[?] Workspace index is not same search result \n")
+        
+        ConfigSave = Config().edit(workspace)
+        if ConfigSave == True:
+            print("\n[+] updates is saved\n")
+        else:
+            print("\n[+] There was an error while save updates\n")
+
 
     def get(self, workspace_name):
         workspaces_json = Config().config['custom']
@@ -345,7 +333,7 @@ class Workspace():
         for workspace in workspaces_json:
             workspace_index += 1
             if workspace['name'] == workspace_name or workspace['alias'] == workspace_name:
-                print(workspace_index)
+                workspace['index'] = (int(workspace_index)-1)
                 return workspace
         return False
 
@@ -380,10 +368,21 @@ class Config():
 
             print("[+] workspace was saved in config file")
 
-    def edit(workspace_object):
+    def edit(self,workspace_object):
         with open(config_json_file, "r+") as f:
             DataInsert = json.load(f)
-            print(DataInsert)
+
+            DataInsert['custom'][workspace_object['index']] = {
+                "name": workspace_object['name'],
+                "DirectoryPath": workspace_object['DirectoryPath'],
+                "run": workspace_object['run']
+            }
+
+            f.seek(0)
+            json.dump(DataInsert, f, indent=4)
+            f.truncate()
+
+            return True
 
     def auto():
         SetupConfigDirectory = os.path.exists(config_directory)
