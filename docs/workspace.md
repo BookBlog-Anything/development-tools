@@ -2,7 +2,7 @@
 
 - [Prepare workspace for use](#prepare-workspace-for-use)
 - [Creator functions](#crud-workspace-functions)
-- [Support & Errors](#🛠support)
+- [Support & Errors](#support)
 
 ## Prepare workspace for use
 First you have make setup for all config files that workspace use,
@@ -28,7 +28,7 @@ For edit or update some option in workspace since name until runs apps & command
 
     workspace.py -u WORKSPACE_NAME_OR_ALIAS
 
-## 🛠Support 
+## Support 
 This contain some helpers from dev documentation for fix some errors
 
 ### Read ,inspect or fix file
